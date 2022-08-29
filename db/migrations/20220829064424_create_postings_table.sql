@@ -3,7 +3,7 @@ CREATE TABLE postings (
 id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
 classification VARCHAR(100),            -- 모집 구분
 volume INT,                             -- 모집인원
-onofline VARCHAR(50),                   -- 진행방식(on/offline)
+onoffline VARCHAR(50),                  -- 진행방식(on/offline)
 progress_period VARCHAR(50),            -- 진행기간(기간미정, 1개월, 2개월 ...)
 stack VARCHAR(50),                      -- 기술스택 콤마로 구분해서 여러개 값
 start_date DATETIME,                    -- 시작 예정일
