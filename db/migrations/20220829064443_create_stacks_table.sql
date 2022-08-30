@@ -1,9 +1,9 @@
 -- migrate:up
 CREATE TABLE stacks (
 id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-stack_name VARCHAR(100),
-stack_image VARCHAR(3000),
-stack_classification VARCHAR(100)
+name VARCHAR(100),
+image VARCHAR(2000),
+classification VARCHAR(100)
 );
 
 

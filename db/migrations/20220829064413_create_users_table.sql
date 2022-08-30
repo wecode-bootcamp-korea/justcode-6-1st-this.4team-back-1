@@ -5,8 +5,11 @@ email VARCHAR(100) UNIQUE NOT NULL,
 nickname VARCHAR(50),
 password VARCHAR(300) NOT NULL,
 profile_image VARCHAR(3000),
-stack VARCHAR(100)
+create_at DATETIME DEFAULT NOW(),
+update_at DATETIME DEFAULT NOW() ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- migrate:down
 DROP TABLE users;
+
+-- O
