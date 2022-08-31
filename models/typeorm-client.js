@@ -7,15 +7,16 @@ const myDataSource = new DataSource({
   port: process.env.TYPEORM_PORT,
   username: process.env.TYPEORM_USERNAME,
   password: process.env.TYPEORM_PASSWORD,
-  database: process.env.TYPEORM_DATABASE
+  database: process.env.TYPEORM_DATABASE,
 });
 
-myDataSource.initialize()
+myDataSource
+  .initialize()
   .then(() => {
-    console.log("Data Source has been initialized!")
+    console.log('Data Source has been initialized!');
   })
-  .catch((err) => {
-    console.error("Error during Data Source initialization", err)
-  })
+  .catch(err => {
+    console.error('Error during Data Source initialization', err);
+  });
 
-  module.exports = { myDataSource }
+module.exports = { myDataSource };
