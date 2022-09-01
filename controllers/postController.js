@@ -5,7 +5,15 @@ const getOnePost = async (req, res) => {
 
   const post = await postService.getOnePost(post_id);
 
-  return res.status(200).json(post);
+  return res.status(200).json({ post });
 }
 
-module.exports = { getOnePost }
+const getPostList = async (req, res) => {
+  const { user_id, is_closed, stacks, classification } = req.body;
+
+  const posts = await postService.getPostList(user_id, is_closed, stacks, classification);
+
+  return res.status(200).json({ posts });
+}
+
+module.exports = { getOnePost, getPostList }
