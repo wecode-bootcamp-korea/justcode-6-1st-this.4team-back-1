@@ -81,7 +81,7 @@ const updatePosting = async (
   );
   if (isCorrectId[0].SUCCESS === '0') {
     const err = new Error('NOT CORRECT USER');
-    err.status = 404;
+    err.status = 403;
     throw err;
   }
 
@@ -142,22 +142,20 @@ const deletePosting = async (user_id, posting_id) => {
   );
   if (isCorrectId[0].SUCCESS === '0') {
     const err = new Error('NOT CORRECT USER');
-    err.status = 404;
+    err.status = 403;
     throw err;
   }
   await myDataSource.query(
     `
-    DELETE FROM posting_stack WHERE posting_id = ?
-  `,
+    DELETE FROM posting_stack, comments 
+      USING 
+        posting_stack 
+      LEFT JOIN 
+        comments ON posting_stack.posting_id = comments.posting_id 
+      WHERE comments.posting_id = ?;
+    `,
     [posting_id]
   );
-  await myDataSource.query(
-    `
-    DELETE FROM comments WHERE posting_id = ?
-  `,
-    [posting_id]
-  );
-
   await myDataSource.query(
     `
     DELETE FROM postings WHERE id = ?

@@ -14,7 +14,7 @@ const createPosting = asyncWrap(async (req, res) => {
     contact_content,
     title,
     contents,
-  } = req.body.data;
+  } = req.body;
   try {
     await postingService.createPosting(
       token,
@@ -51,7 +51,7 @@ const updatePosting = asyncWrap(async (req, res) => {
       contact_content,
       title,
       contents,
-    } = req.body.data;
+    } = req.body;
     await postingService.updatePosting(
       token,
       posting_id,
@@ -73,8 +73,8 @@ const updatePosting = asyncWrap(async (req, res) => {
   }
 });
 
-const deletePosting = async (req, res) => {
-  const { token, posting_id } = req.body.data;
+const deletePosting = asyncWrap(async (req, res) => {
+  const { token, posting_id } = req.body;
   try {
     await postingService.deletePosting(token, posting_id);
     res.status(204).json({ message: 'Posting Deleted' });
@@ -82,6 +82,6 @@ const deletePosting = async (req, res) => {
     console.log(err);
     res.status(err.status || 500).json(err.message);
   }
-};
+});
 
 module.exports = { createPosting, updatePosting, deletePosting };

@@ -6,7 +6,7 @@ function signupController(req, res) {
 }
 
 const login = async (req, res) => {
-  const { email, password } = req.body.data;
+  const { email, password } = req.body;
   const { user } = await userService.login(email, password);
 
   try {
