@@ -1,4 +1,4 @@
-const dataSource = require("./typeorm-client");
+const { myDataSource } = require('./typeorm-client');
 
 const getStackList = async(classification) => {
   let query = `SELECT * FROM stacks WHERE classification LIKE CONCAT('%',` + `?` + `,'%')`;
@@ -10,7 +10,7 @@ const getStackList = async(classification) => {
     ORDER BY COUNT DESC
     LIMIT 0,10`
   }
-  return await dataSource.myDataSource.query(
+  return await myDataSource.query(
     query, [classification]
   )
 }
