@@ -9,9 +9,9 @@ const getOnePost = async (req, res) => {
 }
 
 const getPostList = async (req, res) => {
-  const { user_id, is_closed, stacks, classification } = req.body;
+  const { user_id, stacks } = req.body;
 
-  const posts = await postService.getPostList(user_id, is_closed, stacks, classification);
+  const posts = await postService.getPostList(user_id, stacks);
 
   return res.status(200).json({ posts });
 }
