@@ -84,4 +84,31 @@ const deletePosting = asyncWrap(async (req, res) => {
   }
 });
 
-module.exports = { createPosting, updatePosting, deletePosting };
+const getOnePost = async (req, res) => {
+  const { post_id } = req.body;
+
+  try {
+    const post = await postingService.getOnePost(post_id);
+    res.status(200).json({ post });
+  } catch (err) {
+    console.log(err);
+    res.status(err.status || 500).json(err.message);
+  }
+
+}
+
+const getPostList = async (req, res) => {
+  const { user_id, stacks } = req.body;
+
+  try{
+    const posts = await postingService.getPostList(user_id, stacks);
+    res.status(200).json({ posts });
+  } catch (err) {
+    console.log(err);
+    res.status(err.status || 500).json(err.message);
+  }
+  
+}
+
+module.exports = { createPosting, updatePosting, deletePosting, getOnePost, getPostList };
+

@@ -1,20 +1,38 @@
 const { myDataSource } = require('./typeorm-client');
 
-const login = async (email, password) => {
-  // PART 2 : database 조작
-  // username을 이용하는 사용자가 DB에 있는지 확인
-  const [user] = await myDataSource.query(
-    `
-    SELECT 
-      id, 
-      email, 
-      password 
-    FROM users 
-    WHERE email = ?
-  `,
-    [email]
-  );
-  return user;
-};
 
-module.exports = { login };
+// 사용자 회원가입
+const createUser = async (email, nickname, password) => {
+  await myDataSource.query(
+    `INSERT INTO users(email, nickname, password) VALUES (?,?,?)`, [email, nickname, password]
+  );
+}
+
+// 이메일 중복체크
+const emailCheck = async (email) => {
+  const result = await myDataSource.query(
+    `SELECT email FROM users WHERE email = ?`, [email]
+  );
+
+  return result;
+}
+
+// 이메일로 사용자 정보 가지고 오기
+const getUserByEmail = async(email) => {
+  const [user] = await myDataSource.query(
+    `SELECT * FROM users WHERE email = ?`, [email]
+  );
+
+  console.log('getUserByEmail : ', user);
+
+  return user;
+}
+
+// 사용자 정보 수정
+const updateUser = async (nickname, stacks, profile_image) => {
+  await myDataSource.query(
+    `UPDATE users SET nickname = ?, stack = ?, profile_image = ?`, [nickname, stacks, profile_image]
+  );
+}
+
+module.exports = {createUser, emailCheck, getUserByEmail, updateUser}

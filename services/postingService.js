@@ -98,4 +98,14 @@ const deletePosting = async (token, posting_id) => {
   await postingDao.deletePosting(user_id, posting_id);
 };
 
-module.exports = { createPosting, updatePosting, deletePosting };
+const getOnePost = async (post_id) => {
+
+  return await postingDao.getOnePost(post_id);
+}
+
+const getPostList = async (user_id, stacks) => {
+
+  return await postingDao.getPostList(user_id, stacks);
+}
+
+module.exports = { createPosting, updatePosting, deletePosting, getOnePost, getPostList };

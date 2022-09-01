@@ -61,5 +61,4 @@ const deleteComment = asyncWrap(async (req, res) => {
       .json(err.message || { message: 'DeleteComment Error' });
   }
 });
-
 module.exports = { createComment, readComment, updateComment, deleteComment };
