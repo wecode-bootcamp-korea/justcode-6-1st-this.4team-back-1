@@ -1,5 +1,6 @@
 const postingDao = require('../models/postingDao');
 const jwt = require('jsonwebtoken');
+const { token } = require('morgan');
 
 const createPosting = async (
   token,
@@ -103,7 +104,12 @@ const getOnePost = async (post_id) => {
   return await postingDao.getOnePost(post_id);
 }
 
-const getPostList = async (user_id, stacks) => {
+const getPostList = async (token, stacks) => {
+
+  let user_id = "";
+  if(token) {
+    user_id = jwt.verify(token, 'secretKey').user_id;
+  }
 
   return await postingDao.getPostList(user_id, stacks);
 }

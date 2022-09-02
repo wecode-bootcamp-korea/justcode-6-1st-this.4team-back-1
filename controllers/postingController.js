@@ -98,10 +98,11 @@ const getOnePost = async (req, res) => {
 }
 
 const getPostList = async (req, res) => {
-  const { user_id, stacks } = req.body;
+  const { token }  = req.headers;
+  const { stacks } = req.query;
 
   try{
-    const posts = await postingService.getPostList(user_id, stacks);
+    const posts = await postingService.getPostList(token, stacks);
     res.status(200).json({ posts });
   } catch (err) {
     console.log(err);
