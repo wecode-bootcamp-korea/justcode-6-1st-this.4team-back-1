@@ -55,5 +55,5 @@ const updateUser = async (nickname, stacks, profile_image, token) => {
   await userDao.updateUser(nickname, stacks, profile_image, user_id);
 }
 
-module.exports = { createUser, emailCheck, getUser, userLogin, updateUser }
+module.exports = { createUser, getUser, userLogin, updateUser }
 

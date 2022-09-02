@@ -21,7 +21,7 @@ const createUser = async (req, res) => {
 
 // 사용자 정보 가져오기
 const getUser = async (req, res) => {
-  const { token } = req.body;
+  const { token } = req.headers;
 
   try {
     const user = await userService.getUser(token);
@@ -56,7 +56,8 @@ const userLogin = async (req, res) => {
 
 // 사용자 정보 수정
 const updateUser = async (req, res) => {
-  const { nickname, stacks, profile_image, token } = req.body;
+  const { token } = req.headers;
+  const { nickname, stacks, profile_image } = req.body;
 
   try {
     await userService.updateUser(nickname, stacks, profile_image, token);
@@ -67,5 +68,5 @@ const updateUser = async (req, res) => {
   }
 }
 
-module.exports = { createUser, emailCheck, getUser, userLogin, updateUser }
+module.exports = { createUser, getUser, userLogin, updateUser }
 
