@@ -23,16 +23,23 @@ const getUserByEmail = async(email) => {
     `SELECT * FROM users WHERE email = ?`, [email]
   );
 
-  console.log('getUserByEmail : ', user);
+  return user;
+}
+
+// 사용자 아이디로 정보 가지고 오기
+const getUserById = async(id) => {
+  const [user] = await myDataSource.query(
+    `SELECT * FROM users WHERE id = ?`, [id]
+  );
 
   return user;
 }
 
 // 사용자 정보 수정
-const updateUser = async (nickname, stacks, profile_image) => {
+const updateUser = async (nickname, stacks, profile_image, user_id) => {
   await myDataSource.query(
-    `UPDATE users SET nickname = ?, stack = ?, profile_image = ?`, [nickname, stacks, profile_image]
+    `UPDATE users SET nickname = ?, stack = ?, profile_image = ? WHERE id = ?`, [nickname, stacks, profile_image, user_id]
   );
 }
 
-module.exports = {createUser, emailCheck, getUserByEmail, updateUser}
+module.exports = {createUser, emailCheck, getUserByEmail, getUserById, updateUser}

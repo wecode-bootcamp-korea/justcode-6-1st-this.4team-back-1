@@ -27,9 +27,9 @@ const emailCheck = async (req, res) => {
 
 // 사용자 정보 가져오기
 const getUser = async (req, res) => {
-  const { email } = req.body;
+  const { token } = req.body;
 
-  const user = await userService.getUser(email);
+  const user = await userService.getUser(token);
 
   return res.status(200).json({ nickname: user.nickname, stacks: user.stack, profile_image: user.profile_image });
 }
@@ -37,24 +37,29 @@ const getUser = async (req, res) => {
 // 사용자 로그인
 const userLogin = async (req, res) => {
   const { email, password } = req.body;
+  try {
 
-  const result = await userService.userLogin(email, password);
+    const result = await userService.userLogin(email, password);
 
-  switch(result.state) {
-    case "fail":
-      return res.status(401).json({message: "login fail"});
-    
-    case "success":
-      return res.status(200).json({message: "login success", tokon: result.token});
+    switch(result.state) {
+      case "fail":
+        return res.status(401).json({message: "login fail"});
       
+      case "success":
+        return res.status(200).json({message: "login success", tokon: result.token});
+        
+    }
+  } catch (err) {
+    res.status(err.status || 500).json(err.message);
   }
+  
 }
 
 // 사용자 정보 수정
 const updateUser = async (req, res) => {
-  const { nickname, stacks, profile_image } = req.body;
+  const { nickname, stacks, profile_image, token } = req.body;
 
-  await userService.updateUser(nickname, stacks, profile_image);
+  await userService.updateUser(nickname, stacks, profile_image, token);
 
   return res.status(201).json({ message : "success" });
 }

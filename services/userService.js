@@ -24,8 +24,10 @@ const emailCheck = async (email) => {
 }
 
 // 사용자 정보 가져오기
-const getUser = async (email) => {
-  const user = await userDao.getUserByEmail(email);
+const getUser = async (token) => {
+  const user_id = jwt.verify(token, 'secretKey').user_id;
+  
+  const user = await userDao.getUserById(user_id);
 
   return user;
 }
@@ -52,8 +54,10 @@ const userLogin = async (email, password) => {
 }
  
 // 사용자 정보 수정
-const updateUser = async (nickname, stacks, profile_image) => {
-  await userDao.updateUser(nickname, stacks, profile_image);
+const updateUser = async (nickname, stacks, profile_image, token) => {
+  const user_id = jwt.verify(token, 'secretKey').user_id;
+
+  await userDao.updateUser(nickname, stacks, profile_image, user_id);
 }
 
 module.exports = { createUser, emailCheck, getUser, userLogin, updateUser }
