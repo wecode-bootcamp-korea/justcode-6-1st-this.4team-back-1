@@ -5,24 +5,11 @@ const createUser = async (req, res) => {
   const { email, nickname, password } = req.body;
 
   try {
-    await userService.createUser( email, nickname, password );
-
-    return res.status(201).json({ message : "success" });
-  } catch (err) {
-    res.status(err.status || 500).json(err.message);
-  }
-}
-
-// 이메일 중복체크
-const emailCheck = async (req, res) => {
-  const { email } = req.body;
-
-  try {
-    const result = await userService.emailCheck(email);
+    const result = await userService.createUser( email, nickname, password );
 
     switch(result) {
       case "success":
-        return res.status(200).json({message: result});
+        return res.status(201).json({message: result});
       
       case "fail":
         return res.status(400).json({message: result});

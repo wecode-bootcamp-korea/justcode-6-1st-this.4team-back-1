@@ -4,17 +4,12 @@ const jwt = require('jsonwebtoken');
 
 // 사용자 회원가입
 const createUser = async (email, nickname, password) => {
-  const hashedPw = await bcrypt.hash(password, 10);
-  await userDao.createUser(email, nickname, hashedPw);
-}
-
-// 이메일 중복체크
-const emailCheck = async (email) => {
   const result = await userDao.emailCheck(email);
 
-  let check = "";
-
   if(!result) {
+    const hashedPw = await bcrypt.hash(password, 10);
+    await userDao.createUser(email, nickname, hashedPw);
+
     check = "success";
   } else {
     check = "fail";
