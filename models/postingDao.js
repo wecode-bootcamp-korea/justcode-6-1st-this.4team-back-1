@@ -210,6 +210,7 @@ const getPostList = async(user_id, stacks) => {
   post.start_date, 
   post.contact_content, 
   post.progress_period,
+  (SELECT COUNT(*) FROM comments WHERE posting_id = post_id) AS comment_cnt,
   (
     SELECT
       JSON_ARRAYAGG(
@@ -240,52 +241,6 @@ const getPostList = async(user_id, stacks) => {
     query = query + `WHERE stack.id IN (?) GROUP BY post.id`
     param.push(arr);
   }
-
-  /* 
-  if(is_closed || stacks || classification) {
-    let str = '';
-
-    if(is_closed) {
-      if(!str) {
-        str = str + `is_closed = ?`;
-      } else {
-        str = str + ` AND is_closed = ?`;  
-      }
-
-      param.push(is_closed);
-    }
-
-    if(stacks) {
-      let arr = stacks.split(',');
-
-      if(!str) {
-        str = str + `stack.id IN (?)`
-      } else {
-        str = str + ` AND stack.id IN (?)`  
-      }
-
-      param.push(arr);
-    }
-
-    if(classification) {
-      if(!str) {
-        str = str + `post.classification = ?`
-      } else {
-        str = str + ` AND post.classification = ?`  
-      }
-
-      param.push(classification);
-    }
-
-    query = query + `WHERE ` + str + ` GROUP BY post.id`
-
-  }
-  
-
-  if(!user_id && !is_closed && !stacks && !classification) {
-    query = query + ` GROUP BY post.id`;
-  }
-  */
 
   return await myDataSource.query(query, param);
 
