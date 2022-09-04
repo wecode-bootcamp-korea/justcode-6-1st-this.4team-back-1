@@ -26,7 +26,7 @@ const getUser = async (req, res) => {
   try {
     const user = await userService.getUser(token);
 
-    return res.status(200).json({ nickname: user.nickname, stacks: user.stack, profile_image: user.profile_image });
+    return res.status(200).json({ user });
   } catch (error) {
     res.status(err.status || 500).json(err.message);
   }
