@@ -8,7 +8,7 @@ const stackRouter = require('./stack');
 const commentRouter = require('./comment');
 
 router.use('/user', userRouter);
-router.use('/posting', postingRouter);
+router.use('/post', postingRouter);
 router.use('/comment', commentRouter);
 router.use('/stack', stackRouter);
 
