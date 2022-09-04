@@ -2,7 +2,7 @@ const userService = require('../services/userService');
 
 // 사용자 회원가입
 const createUser = async (req, res) => {
-  const { email, nickname, password } = req.query;
+  const { email, nickname, password } = req.body;
 
   try {
     const result = await userService.createUser( email, nickname, password );
@@ -35,7 +35,7 @@ const getUser = async (req, res) => {
 
 // 사용자 로그인
 const userLogin = async (req, res) => {
-  const { email, password } = req.query;
+  const { email, password } = req.body;
   try {
 
     const result = await userService.userLogin(email, password);

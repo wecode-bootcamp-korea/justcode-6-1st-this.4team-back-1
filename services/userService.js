@@ -9,7 +9,7 @@ const createUser = async (email, nickname, password) => {
 
   let check = "";
 
-  if(result[0].email !== email) {
+  if(result.length == 0) {
     
     const hashedPw = await bcrypt.hash(password, 10);
     await userDao.createUser(email, nickname, hashedPw);
