@@ -8,9 +8,9 @@ const {
 
 const router = express.Router();
 
-router.post('/register', createComment);
-router.get('', readComment);
-router.patch('/update', updateComment);
-router.delete('/delete', deleteComment);
+router.post('/:posting_id', createComment);
+router.get('/:posting_id', readComment);
+router.patch('/:comment_id', updateComment);
+router.delete('/:comment_id', deleteComment);
 
 module.exports = router;

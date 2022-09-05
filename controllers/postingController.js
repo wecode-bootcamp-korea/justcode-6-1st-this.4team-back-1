@@ -2,14 +2,14 @@ const postingService = require('../services/postingService.js');
 const asyncWrap = require('./async-wrap');
 
 const createPosting = asyncWrap(async (req, res) => {
+  const token = req.headers.token;
   const {
-    token,
     classification,
     volume,
+    start_date,
     onoffline,
     progress_period,
     stack,
-    start_date,
     contact,
     contact_content,
     title,
@@ -38,9 +38,9 @@ const createPosting = asyncWrap(async (req, res) => {
 
 const updatePosting = asyncWrap(async (req, res) => {
   try {
+    const token = req.headers.token;
+    const { posting_id } = req.params;
     const {
-      token,
-      posting_id,
       classification,
       volume,
       onoffline,
@@ -74,10 +74,24 @@ const updatePosting = asyncWrap(async (req, res) => {
 });
 
 const deletePosting = asyncWrap(async (req, res) => {
-  const { token, posting_id } = req.body;
+  const token = req.headers.token;
+  const { posting_id } = req.params;
   try {
     await postingService.deletePosting(token, posting_id);
     res.status(204).json({ message: 'Posting Deleted' });
+  } catch (err) {
+    console.log(err);
+    res.status(err.status || 500).json(err.message);
+  }
+});
+
+const closedPosting = asyncWrap(async (req, res) => {
+  const token = req.headers.token;
+  const { posting_id } = req.params;
+
+  try {
+    await postingService.closedPosting(token, posting_id);
+    res.status(200).json({ message: 'Posting is closed!' });
   } catch (err) {
     console.log(err);
     res.status(err.status || 500).json(err.message);
@@ -94,22 +108,26 @@ const getOnePost = async (req, res) => {
     console.log(err);
     res.status(err.status || 500).json(err.message);
   }
-
-}
+};
 
 const getPostList = async (req, res) => {
-  const { token }  = req.headers;
+  const { token } = req.headers;
   const { stacks } = req.query;
 
-  try{
+  try {
     const posts = await postingService.getPostList(token, stacks);
     res.status(200).json({ posts });
   } catch (err) {
     console.log(err);
     res.status(err.status || 500).json(err.message);
   }
-  
-}
+};
 
-module.exports = { createPosting, updatePosting, deletePosting, getOnePost, getPostList };
-
+module.exports = {
+  createPosting,
+  updatePosting,
+  deletePosting,
+  closedPosting,
+  getOnePost,
+  getPostList,
+};
