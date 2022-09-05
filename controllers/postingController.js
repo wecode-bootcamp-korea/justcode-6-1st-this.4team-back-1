@@ -98,30 +98,30 @@ const closedPosting = asyncWrap(async (req, res) => {
   }
 });
 
-const getOnePost = async (req, res) => {
-  const { post_id } = req.body;
-
+const getOnePost = asyncWrap(async (req, res) => {
+  const { posting_id } = req.params;
   try {
-    const post = await postingService.getOnePost(post_id);
+    const post = await postingService.getOnePost(posting_id);
     res.status(200).json({ post });
   } catch (err) {
     console.log(err);
     res.status(err.status || 500).json(err.message);
   }
-};
+});
 
-const getPostList = async (req, res) => {
-  const { token } = req.headers;
-  const { stacks } = req.query;
+const getPostList = asyncWrap(async (req, res) => {
+  const { token }  = req.headers;
+  const { stacks, page, limit } = req.query;
+  const { userId } = req.param;
 
-  try {
-    const posts = await postingService.getPostList(token, stacks);
+  try{
+    const posts = await postingService.getPostList(token, stacks, page, limit);
     res.status(200).json({ posts });
   } catch (err) {
     console.log(err);
     res.status(err.status || 500).json(err.message);
   }
-};
+});
 
 module.exports = {
   createPosting,
