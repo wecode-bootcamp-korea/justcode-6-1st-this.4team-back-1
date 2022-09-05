@@ -1,11 +1,13 @@
 const { myDataSource } = require('./typeorm-client');
+const postingStackDao = require('./postingStackDao');
+const postingCommentDao = require('./postingCommentDao');
+const commonDao = require('./commonDao');
 
 const createPosting = async (
   classification,
   volume,
   onoffline,
   progress_period,
-  stacks,
   start_date,
   contact,
   contact_content,
@@ -13,7 +15,7 @@ const createPosting = async (
   title,
   contents
 ) => {
-  await myDataSource.query(
+  const posting_id = await myDataSource.query(
     `
       INSERT INTO 
         postings(classification,
@@ -41,22 +43,7 @@ const createPosting = async (
       contents,
     ]
   );
-  const posting_id = await myDataSource.query(
-    `
-      SELECT postings.id FROM postings WHERE user_id = ? ORDER BY postings.id DESC LIMIT 1;
-    `,
-    [user_id]
-  );
-  for (let i = 0; i < stacks.length; i++) {
-    await myDataSource.query(
-      `
-      INSERT INTO
-      posting_stack(posting_id, stack_id)
-      VALUES (?, ?)
-      `,
-      [posting_id[0].id, stacks[i]]
-    );
-  }
+  return posting_id.insertId;
 };
 
 const updatePosting = async (
@@ -66,24 +53,25 @@ const updatePosting = async (
   volume,
   onoffline,
   progress_period,
-  stacks,
   start_date,
   contact,
   contact_content,
   title,
   contents
 ) => {
-  const isCorrectId = await myDataSource.query(
+  const isCorrectPostingId = await myDataSource.query(
     `
-  SELECT EXISTS (SELECT * FROM postings WHERE user_id = ? AND id = ? limit 1) AS SUCCESS
-  `,
-    [user_id, posting_id]
+      SELECT EXISTS (SELECT * FROM postings WHERE id = ?) AS SUCCESS;
+    `,
+    [posting_id]
   );
-  if (isCorrectId[0].SUCCESS === '0') {
-    const err = new Error('NOT CORRECT USER');
-    err.status = 403;
+  if (isCorrectPostingId[0].SUCCESS === '0') {
+    const err = new Error(`NOT CORRECT POSTING!`);
+    err.status = 404;
     throw err;
   }
+  let table = 'postings';
+  await commonDao.isCorrectUserId(table, user_id, posting_id);
 
   await myDataSource.query(
     `
@@ -115,58 +103,54 @@ const updatePosting = async (
       posting_id,
     ]
   );
-
-  await myDataSource.query(
-    `
-    DELETE FROM posting_stack WHERE posting_id = ?;
-    `,
-    [posting_id]
-  );
-
-  for (let i = 0; i < stacks.length; i++) {
-    await myDataSource.query(
-      `
-      INSERT INTO posting_stack( posting_id, stack_id ) VALUES (?, ?);
-      `,
-      [posting_id, stacks[i]]
-    );
-  }
 };
 
 const deletePosting = async (user_id, posting_id) => {
-  const isCorrectId = await myDataSource.query(
+  const isCorrectPostingId = await myDataSource.query(
     `
-    SELECT EXISTS (SELECT * FROM postings WHERE user_id = ? AND id = ? limit 1) AS SUCCESS
-  `,
-    [user_id, posting_id]
-  );
-  if (isCorrectId[0].SUCCESS === '0') {
-    const err = new Error('NOT CORRECT USER');
-    err.status = 403;
-    throw err;
-  }
-  await myDataSource.query(
-    `
-    DELETE FROM posting_stack, comments 
-      USING 
-        posting_stack 
-      LEFT JOIN 
-        comments ON posting_stack.posting_id = comments.posting_id 
-      WHERE comments.posting_id = ?;
+      SELECT EXISTS (SELECT * FROM postings WHERE id = ?) AS SUCCESS;
     `,
     [posting_id]
   );
+  if (isCorrectPostingId[0].SUCCESS === '0') {
+    const err = new Error(`NOT CORRECT POSTING!`);
+    err.status = 404;
+    throw err;
+  }
+  let table = 'postings';
+  await commonDao.isCorrectUserId(table, user_id, posting_id);
+
+  await postingStackDao.deletePostingStack(posting_id);
+  await postingCommentDao.deletePostingComment(posting_id);
+
+  await commonDao.commonDelete(table, posting_id);
+};
+
+const closedPosting = async (user_id, posting_id) => {
+  const isCorrectPostingId = await myDataSource.query(
+    `
+      SELECT EXISTS (SELECT * FROM postings WHERE id = ?) AS SUCCESS;
+    `,
+    [posting_id]
+  );
+  if (isCorrectPostingId[0].SUCCESS === '0') {
+    const err = new Error('Not Correct Posting Id!');
+    err.status = 404;
+    throw err;
+  }
+  let table = 'postings';
+  await commonDao.isCorrectUserId(table, user_id, posting_id);
+
   await myDataSource.query(
     `
-    DELETE FROM postings WHERE id = ?
+      UPDATE postings SET is_closed = 'Y' WHERE id = ?;
     `,
     [posting_id]
   );
 };
 
-
 // 게시글 상세페이지
-const getOnePost = async(post_id) => {
+const getOnePost = async post_id => {
   return await myDataSource.query(
     `SELECT 
     post.title, 
@@ -190,12 +174,13 @@ const getOnePost = async(post_id) => {
     JOIN posting_stack ps ON post.id = ps.posting_id
     JOIN stacks stack ON ps.stack_id = stack.id
     WHERE post.id = ?
-    `, [post_id]
+    `,
+    [post_id]
   );
-}
+};
 
 // 게시글 목록
-const getPostList = async(user_id, stacks) => {
+const getPostList = async (user_id, stacks) => {
   let param = [];
 
   let query = `SELECT 
@@ -230,21 +215,26 @@ const getPostList = async(user_id, stacks) => {
   JOIN posting_stack ps ON post.id = ps.posting_id
   JOIN stacks stack ON ps.stack_id = stack.id `;
 
-  if(user_id) {
+  if (user_id) {
     query = query + `WHERE user_id = ? GROUP BY post.id`;
     param.push(user_id);
-  } 
+  }
 
-  if(stacks) {
+  if (stacks) {
     let arr = stacks.split(',');
 
-    query = query + `WHERE stack.id IN (?) GROUP BY post.id`
+    query = query + `WHERE stack.id IN (?) GROUP BY post.id`;
     param.push(arr);
   }
 
   return await myDataSource.query(query, param);
+};
 
-}
-
-module.exports = { createPosting, updatePosting, deletePosting, getOnePost, getPostList  };
-
+module.exports = {
+  createPosting,
+  updatePosting,
+  deletePosting,
+  closedPosting,
+  getOnePost,
+  getPostList,
+};

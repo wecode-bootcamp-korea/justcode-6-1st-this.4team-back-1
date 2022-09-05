@@ -1,6 +1,7 @@
 const postingDao = require('../models/postingDao');
+const postingStackDao = require('../models/postingStackDao');
+const stackService = require('./stackService');
 const jwt = require('jsonwebtoken');
-const { token } = require('morgan');
 
 const createPosting = async (
   token,
@@ -36,20 +37,17 @@ const createPosting = async (
     }
   }
   const stacks = stack.split(',');
-  if (stacks.length > 5) {
-    const error = new Error('Too many stacks selected!');
-    error.status = 400;
-    throw error;
-  }
+  await stackService.checkStackLength(stacks);
+
   // token 복호화
   const user_id = jwt.verify(token, 'secretKey').user_id;
 
-  await postingDao.createPosting(
+  console.log(user_id);
+  const posting_id = await postingDao.createPosting(
     classification,
     volume,
     onoffline,
     progress_period,
-    stacks,
     start_date,
     contact,
     contact_content,
@@ -57,6 +55,7 @@ const createPosting = async (
     title,
     contents
   );
+  await postingStackDao.insertPostingStack(posting_id, stacks);
 };
 
 const updatePosting = async (
@@ -73,7 +72,29 @@ const updatePosting = async (
   title,
   contents
 ) => {
+  const params = [
+    token,
+    posting_id,
+    classification,
+    volume,
+    onoffline,
+    progress_period,
+    stack,
+    start_date,
+    contact,
+    contact_content,
+    title,
+    contents,
+  ];
+  for (const [key, value] of Object.entries(params)) {
+    if (value == false || value == undefined) {
+      const error = new Error(`${key} value not entered!`);
+      error.status = 400;
+      throw error;
+    }
+  }
   const stacks = stack.split(',');
+  await stackService.checkStackLength(stacks);
   // token 복호화
   const user_id = jwt.verify(token, 'secretKey').user_id;
 
@@ -84,13 +105,14 @@ const updatePosting = async (
     volume,
     onoffline,
     progress_period,
-    stacks,
     start_date,
     contact,
     contact_content,
     title,
     contents
   );
+  await postingStackDao.deletePostingStack(posting_id);
+  await postingStackDao.insertPostingStack(posting_id, stacks);
 };
 
 const deletePosting = async (token, posting_id) => {
@@ -99,19 +121,30 @@ const deletePosting = async (token, posting_id) => {
   await postingDao.deletePosting(user_id, posting_id);
 };
 
-const getOnePost = async (post_id) => {
+const closedPosting = async (token, posting_id) => {
+  const user_id = jwt.verify(token, 'secretKey').user_id;
 
+  await postingDao.closedPosting(user_id, posting_id);
+};
+
+const getOnePost = async post_id => {
   return await postingDao.getOnePost(post_id);
-}
+};
 
 const getPostList = async (token, stacks) => {
-
-  let user_id = "";
-  if(token) {
+  let user_id = '';
+  if (token) {
     user_id = jwt.verify(token, 'secretKey').user_id;
   }
 
   return await postingDao.getPostList(user_id, stacks);
-}
+};
 
-module.exports = { createPosting, updatePosting, deletePosting, getOnePost, getPostList };
+module.exports = {
+  createPosting,
+  updatePosting,
+  deletePosting,
+  closedPosting,
+  getOnePost,
+  getPostList,
+};

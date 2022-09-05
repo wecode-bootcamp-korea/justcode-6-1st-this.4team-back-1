@@ -2,12 +2,10 @@ const commentService = require('../services/commentService');
 const asyncWrap = require('./async-wrap');
 
 const createComment = asyncWrap(async (req, res) => {
-  const { token, posting_id, comment } = req.body;
-  if (!token) {
-    const err = new Error('User without login');
-    err.status = 401;
-    throw err;
-  }
+  const token = req.headers.token;
+  const { posting_id } = req.params;
+  const { comment } = req.body;
+
   try {
     await commentService.createComment(token, posting_id, comment);
     res.status(201).json({ message: 'Comment Created' });
@@ -19,9 +17,9 @@ const createComment = asyncWrap(async (req, res) => {
   }
 });
 
-// return 해야하는 정보: users(nickname, profile_image), comments(comment, created_at)
+// return 해야하는 정보: users(nickname, profile_image), comments(comment, create_at)
 const readComment = asyncWrap(async (req, res) => {
-  const { posting_id } = req.body;
+  const { posting_id } = req.params;
 
   try {
     const comments = await commentService.readComment(posting_id);
@@ -35,10 +33,12 @@ const readComment = asyncWrap(async (req, res) => {
 });
 
 const updateComment = asyncWrap(async (req, res) => {
-  const { comment_id, comment } = req.body;
+  const token = req.headers.token;
+  const { comment_id } = req.params;
+  const { comment } = req.body;
 
   try {
-    await commentService.updateComment(comment_id, comment);
+    await commentService.updateComment(token, comment_id, comment);
     res.status(200).json({ message: 'Comment Updated' });
   } catch (err) {
     console.log(err);
@@ -49,10 +49,11 @@ const updateComment = asyncWrap(async (req, res) => {
 });
 
 const deleteComment = asyncWrap(async (req, res) => {
-  const { comment_id } = req.body;
+  const token = req.headers.token;
+  const { comment_id } = req.params;
 
   try {
-    await commentService.deleteComment(comment_id);
+    await commentService.deleteComment(token, comment_id);
     res.status(204).json({ message: 'Comment Deleted' });
   } catch (err) {
     console.log(err);
