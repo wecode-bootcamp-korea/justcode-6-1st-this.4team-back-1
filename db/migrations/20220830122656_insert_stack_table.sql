@@ -37,4 +37,3 @@ INSERT INTO stacks (name, image, classification) VALUES
 
 -- migrate:down
 DELETE FROM stacks;
-

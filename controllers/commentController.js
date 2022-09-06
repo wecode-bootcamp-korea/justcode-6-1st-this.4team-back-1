@@ -17,7 +17,6 @@ const createComment = asyncWrap(async (req, res) => {
   }
 });
 
-// return 해야하는 정보: users(nickname, profile_image), comments(comment, create_at)
 const readComment = asyncWrap(async (req, res) => {
   const { posting_id } = req.params;
 

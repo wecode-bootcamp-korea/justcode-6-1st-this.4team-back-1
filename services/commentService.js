@@ -1,12 +1,10 @@
 const commentDao = require('../models/commentDao');
+const commonService = require('./commonService');
 const jwt = require('jsonwebtoken');
 
 const createComment = async (token, posting_id, comment) => {
-  if (!token) {
-    const err = new Error('User without login');
-    err.status = 401;
-    throw err;
-  }
+  const params = { token, posting_id, comment };
+  commonService.checkAllParams(params);
   const user_id = jwt.verify(token, 'secretKey').user_id;
 
   await commentDao.createComment(user_id, posting_id, comment);

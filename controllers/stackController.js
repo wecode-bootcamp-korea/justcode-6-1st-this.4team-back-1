@@ -7,10 +7,9 @@ const getStackList = async (req, res) => {
   try {
     const stacks = await stackService.getStackList(category);
     return res.status(200).json({ stacks });
-  } catch (err){
+  } catch (err) {
     res.status(err.status || 500).json(err.message);
   }
-  
-}
+};
 
-module.exports = { getStackList }
+module.exports = { getStackList };

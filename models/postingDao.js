@@ -3,18 +3,12 @@ const postingStackDao = require('./postingStackDao');
 const postingCommentDao = require('./postingCommentDao');
 const commonDao = require('./commonDao');
 
-const createPosting = async (
-  classification,
-  volume,
-  onoffline,
-  progress_period,
-  start_date,
-  contact,
-  contact_content,
-  user_id,
-  title,
-  contents
-) => {
+/**
+ *
+ * @param {object} params classification, ... , contents
+ * @returns postings의 새로 삽입 된 PK값
+ */
+const createPosting = async params => {
   const posting_id = await myDataSource.query(
     `
       INSERT INTO 
@@ -31,47 +25,31 @@ const createPosting = async (
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
     `,
     [
-      classification,
-      volume,
-      onoffline,
-      progress_period,
-      start_date,
-      contact,
-      contact_content,
-      user_id,
-      title,
-      contents,
+      params.classification,
+      params.volume,
+      params.onoffline,
+      params.progress_period,
+      params.start_date,
+      params.contact,
+      params.contact_content,
+      params.user_id,
+      params.title,
+      params.contents,
     ]
   );
   return posting_id.insertId;
 };
 
-const updatePosting = async (
-  user_id,
-  posting_id,
-  classification,
-  volume,
-  onoffline,
-  progress_period,
-  start_date,
-  contact,
-  contact_content,
-  title,
-  contents
-) => {
-  const isCorrectPostingId = await myDataSource.query(
-    `
-      SELECT EXISTS (SELECT * FROM postings WHERE id = ?) AS SUCCESS;
-    `,
-    [posting_id]
-  );
-  if (isCorrectPostingId[0].SUCCESS === '0') {
-    const err = new Error(`NOT CORRECT POSTING!`);
-    err.status = 404;
-    throw err;
-  }
+/**
+ *
+ * @param {object} params classification, ... , contents, posting_id
+ */
+const updatePosting = async params => {
   let table = 'postings';
-  await commonDao.isCorrectUserId(table, user_id, posting_id);
+  //테이블에 해당 PK값이 있는지 확인
+  await commonDao.isCorrectId(table, params.posting_id);
+  //작성자 일치여부 확인
+  await commonDao.isCorrectId(table, params.posting_id, params.user_id);
 
   await myDataSource.query(
     `
@@ -91,34 +69,29 @@ const updatePosting = async (
     WHERE id = ?
   `,
     [
-      classification,
-      volume,
-      onoffline,
-      progress_period,
-      start_date,
-      contact,
-      contact_content,
-      title,
-      contents,
-      posting_id,
+      params.classification,
+      params.volume,
+      params.onoffline,
+      params.progress_period,
+      params.start_date,
+      params.contact,
+      params.contact_content,
+      params.title,
+      params.contents,
+      params.posting_id,
     ]
   );
 };
 
+/**
+ *
+ * @param {int} user_id 작성자 PK값
+ * @param {int} posting_id 게시글 PK값
+ */
 const deletePosting = async (user_id, posting_id) => {
-  const isCorrectPostingId = await myDataSource.query(
-    `
-      SELECT EXISTS (SELECT * FROM postings WHERE id = ?) AS SUCCESS;
-    `,
-    [posting_id]
-  );
-  if (isCorrectPostingId[0].SUCCESS === '0') {
-    const err = new Error(`NOT CORRECT POSTING!`);
-    err.status = 404;
-    throw err;
-  }
   let table = 'postings';
-  await commonDao.isCorrectUserId(table, user_id, posting_id);
+  await commonDao.isCorrectId(table, posting_id);
+  await commonDao.isCorrectId(table, posting_id, user_id);
 
   await postingStackDao.deletePostingStack(posting_id);
   await postingCommentDao.deletePostingComment(posting_id);
@@ -126,27 +99,39 @@ const deletePosting = async (user_id, posting_id) => {
   await commonDao.commonDelete(table, posting_id);
 };
 
+/**
+ *
+ * @param {*} user_id 작성자 PK값
+ * @param {*} posting_id 게시글 PK값
+ */
 const closedPosting = async (user_id, posting_id) => {
-  const isCorrectPostingId = await myDataSource.query(
-    `
-      SELECT EXISTS (SELECT * FROM postings WHERE id = ?) AS SUCCESS;
-    `,
-    [posting_id]
-  );
-  if (isCorrectPostingId[0].SUCCESS === '0') {
-    const err = new Error('Not Correct Posting Id!');
-    err.status = 404;
-    throw err;
-  }
   let table = 'postings';
-  await commonDao.isCorrectUserId(table, user_id, posting_id);
+  //테이블에 해당 PK값이 있는지 확인
+  await commonDao.isCorrectId(table, posting_id);
+  //작성자 일치여부 확인
+  await commonDao.isCorrectId(table, user_id, posting_id);
 
-  await myDataSource.query(
+  const is_closed = await myDataSource.query(
     `
-      UPDATE postings SET is_closed = 'Y' WHERE id = ?;
+      SELECT is_closed FROM postings WHERE id = ?;
     `,
     [posting_id]
   );
+  if (!is_closed) {
+    await myDataSource.query(
+      `
+      UPDATE postings SET is_closed = true WHERE id = ?;
+      `,
+      [posting_id]
+    );
+  } else if (is_closed) {
+    await myDataSource.query(
+      `
+      UPDATE postings SET is_closed = false WHERE id = ?;
+      `,
+      [posting_id]
+    );
+  }
 };
 
 // 게시글 상세페이지
@@ -180,8 +165,8 @@ const getOnePost = async post_id => {
 };
 
 // 게시글 목록
-const getPostList = async(user_id, stacks, page, limit) => {
-  let where = "";
+const getPostList = async (user_id, stacks, page, limit) => {
+  let where = '';
   let param = [];
 
   let query = `SELECT 
@@ -217,15 +202,15 @@ const getPostList = async(user_id, stacks, page, limit) => {
   JOIN posting_stack ps ON post.id = ps.posting_id
   JOIN stacks stack ON ps.stack_id = stack.id `;
 
-  if(user_id) {
-    where =  `WHERE user_id = ?`;
+  if (user_id) {
+    where = `WHERE user_id = ?`;
     param.push(user_id);
   } 
 
   if(stacks) {
     let arr = stacks.split(',');
 
-    where = `WHERE stack.id IN (?)`
+    where = `WHERE stack.id IN (?)`;
     param.push(arr);
   }
 
@@ -235,7 +220,7 @@ const getPostList = async(user_id, stacks, page, limit) => {
 
   return await myDataSource.query(query, param);
 
-}
+};
 
 module.exports = {
   createPosting,

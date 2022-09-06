@@ -1,8 +1,8 @@
 const stackDao = require('../models/stackDao');
 
-const getStackList = async (category) => {
+const getStackList = async category => {
+  let classification = '';
 
-  let classification = "";
   switch (category) {
     case '인기':
       classification = 'popular';
@@ -21,7 +21,8 @@ const getStackList = async (category) => {
       break;
   }
 
-  console.log
+  console.log;
+
 
   return await stackDao.getStackList(classification);
 };
