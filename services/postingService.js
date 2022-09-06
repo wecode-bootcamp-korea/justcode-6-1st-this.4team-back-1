@@ -1,118 +1,41 @@
 const postingDao = require('../models/postingDao');
 const postingStackDao = require('../models/postingStackDao');
 const stackService = require('./stackService');
+const commonService = require('./commonService');
 const jwt = require('jsonwebtoken');
 
-const createPosting = async (
-  token,
-  classification,
-  volume,
-  onoffline,
-  progress_period,
-  stack,
-  start_date,
-  contact,
-  contact_content,
-  title,
-  contents
-) => {
-  const params = {
-    token,
-    classification,
-    volume,
-    onoffline,
-    progress_period,
-    stack,
-    start_date,
-    contact,
-    contact_content,
-    title,
-    contents,
-  };
-  for (const [key, value] of Object.entries(params)) {
-    if (value == false || value == undefined) {
-      const error = new Error(`${key} value not entered!`);
-      error.status = 400;
-      throw error;
-    }
-  }
-  const stacks = stack.split(',');
+/**
+ *
+ * @param {object} params
+ */
+const createPosting = async params => {
+  console.log(params);
+  commonService.checkAllParams(params);
+
+  const stacks = params.stack.split(',');
   await stackService.checkStackLength(stacks);
 
   // token 복호화
-  const user_id = jwt.verify(token, 'secretKey').user_id;
+  const user_id = jwt.verify(params.token, 'secretKey').user_id;
 
-  console.log(user_id);
-  const posting_id = await postingDao.createPosting(
-    classification,
-    volume,
-    onoffline,
-    progress_period,
-    start_date,
-    contact,
-    contact_content,
-    user_id,
-    title,
-    contents
-  );
+  const { token, stack, ...newParams } = params;
+  newParams.user_id = user_id;
+  console.log(newParams);
+  const posting_id = await postingDao.createPosting(newParams);
   await postingStackDao.insertPostingStack(posting_id, stacks);
 };
 
-const updatePosting = async (
-  token,
-  posting_id,
-  classification,
-  volume,
-  onoffline,
-  progress_period,
-  stack,
-  start_date,
-  contact,
-  contact_content,
-  title,
-  contents
-) => {
-  const params = [
-    token,
-    posting_id,
-    classification,
-    volume,
-    onoffline,
-    progress_period,
-    stack,
-    start_date,
-    contact,
-    contact_content,
-    title,
-    contents,
-  ];
-  for (const [key, value] of Object.entries(params)) {
-    if (value == false || value == undefined) {
-      const error = new Error(`${key} value not entered!`);
-      error.status = 400;
-      throw error;
-    }
-  }
-  const stacks = stack.split(',');
+const updatePosting = async params => {
+  commonService.checkAllParams(params);
+  const stacks = params.stack.split(',');
   await stackService.checkStackLength(stacks);
   // token 복호화
-  const user_id = jwt.verify(token, 'secretKey').user_id;
-
-  await postingDao.updatePosting(
-    user_id,
-    posting_id,
-    classification,
-    volume,
-    onoffline,
-    progress_period,
-    start_date,
-    contact,
-    contact_content,
-    title,
-    contents
-  );
-  await postingStackDao.deletePostingStack(posting_id);
-  await postingStackDao.insertPostingStack(posting_id, stacks);
+  const user_id = jwt.verify(params.token, 'secretKey').user_id;
+  const { token, stack, ...newParams } = params;
+  newParams.user_id = user_id;
+  await postingDao.updatePosting(newParams);
+  await postingStackDao.deletePostingStack(params.posting_id);
+  await postingStackDao.insertPostingStack(params.posting_id, stacks);
 };
 
 const deletePosting = async (token, posting_id) => {

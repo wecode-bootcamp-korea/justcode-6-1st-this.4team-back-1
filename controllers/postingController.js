@@ -16,7 +16,7 @@ const createPosting = asyncWrap(async (req, res) => {
     contents,
   } = req.body;
   try {
-    await postingService.createPosting(
+    const params = {
       token,
       classification,
       volume,
@@ -27,8 +27,9 @@ const createPosting = asyncWrap(async (req, res) => {
       contact,
       contact_content,
       title,
-      contents
-    );
+      contents,
+    };
+    await postingService.createPosting(params);
     res.status(201).json({ message: 'Posting Created' });
   } catch (err) {
     console.log(err);
@@ -37,22 +38,22 @@ const createPosting = asyncWrap(async (req, res) => {
 });
 
 const updatePosting = asyncWrap(async (req, res) => {
+  const token = req.headers.token;
+  const { posting_id } = req.params;
+  const {
+    classification,
+    volume,
+    onoffline,
+    progress_period,
+    stack,
+    start_date,
+    contact,
+    contact_content,
+    title,
+    contents,
+  } = req.body;
   try {
-    const token = req.headers.token;
-    const { posting_id } = req.params;
-    const {
-      classification,
-      volume,
-      onoffline,
-      progress_period,
-      stack,
-      start_date,
-      contact,
-      contact_content,
-      title,
-      contents,
-    } = req.body;
-    await postingService.updatePosting(
+    const params = {
       token,
       posting_id,
       classification,
@@ -64,8 +65,10 @@ const updatePosting = asyncWrap(async (req, res) => {
       contact,
       contact_content,
       title,
-      contents
-    );
+      contents,
+    };
+
+    await postingService.updatePosting(params);
     res.status(200).json({ message: 'Posting Updated' });
   } catch (err) {
     console.log(err);
