@@ -14,7 +14,7 @@ router.post('', createPosting);
 router.patch('/:posting_id', updatePosting);
 router.patch('/closed/:posting_id', closedPosting);
 router.delete('/:posting_id', deletePosting);
-router.get('/one', getOnePost);
-router.get('/list', getPostList);
+router.get('/:posting_id', getOnePost);
+router.get('', getPostList);
 
 module.exports = router;

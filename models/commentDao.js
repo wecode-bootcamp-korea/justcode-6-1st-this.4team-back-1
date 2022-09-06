@@ -19,6 +19,7 @@ const readComment = async posting_id => {
   const comments = await myDataSource.query(
     `
     SELECT 
+      comments.id,
       users.nickname, 
       users.profile_image, 
       comments.comment, 

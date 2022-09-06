@@ -54,13 +54,18 @@ const getOnePost = async post_id => {
   return await postingDao.getOnePost(post_id);
 };
 
-const getPostList = async (token, stacks) => {
+const getPostList = async (token, stacks, page, limit) => {
   let user_id = '';
   if (token) {
     user_id = jwt.verify(token, 'secretKey').user_id;
   }
 
-  return await postingDao.getPostList(user_id, stacks);
+  let limit_start = 0;
+  if (page != 1) {
+    limit_start = page * limit - (limit - 1);
+  }
+
+  return await postingDao.getPostList(user_id, stacks, limit_start, limit);
 };
 
 module.exports = {

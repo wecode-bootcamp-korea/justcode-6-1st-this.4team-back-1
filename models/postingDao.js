@@ -165,7 +165,8 @@ const getOnePost = async post_id => {
 };
 
 // 게시글 목록
-const getPostList = async (user_id, stacks) => {
+const getPostList = async (user_id, stacks, page, limit) => {
+  let where = '';
   let param = [];
 
   let query = `SELECT 
@@ -180,6 +181,7 @@ const getPostList = async (user_id, stacks) => {
   DATE_FORMAT(post.start_date, '%Y.%m.%d') AS start_date,
   post.contact_content, 
   post.progress_period,
+  post.is_closed,
   (SELECT COUNT(*) FROM comments WHERE posting_id = post_id) AS comment_cnt,
   (
     SELECT
@@ -201,20 +203,23 @@ const getPostList = async (user_id, stacks) => {
   JOIN stacks stack ON ps.stack_id = stack.id `;
 
   if (user_id) {
-    query = query + `WHERE user_id = ? GROUP BY post.id`;
+    where = `WHERE user_id = ?`;
     param.push(user_id);
   }
 
   if (stacks) {
     let arr = stacks.split(',');
 
-    query = query + `WHERE stack.id IN (?) GROUP BY post.id`;
+    where = `WHERE stack.id IN (?)`;
     param.push(arr);
   }
 
+  query = query + where + ` GROUP BY post.id ORDER By post.id limit ?, ?`;
+  param.push(page);
+  param.push(Number(limit));
+
   return await myDataSource.query(query, param);
 };
-
 module.exports = {
   createPosting,
   updatePosting,

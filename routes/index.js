@@ -10,6 +10,6 @@ const commentRouter = require('./comment');
 router.use('/users', userRouter);
 router.use('/posts', postingRouter);
 router.use('/comment', commentRouter);
-router.use('/stack', stackRouter);
+router.use('/skills', stackRouter);
 
 module.exports = router;
