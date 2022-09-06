@@ -113,6 +113,7 @@ const getOnePost = asyncWrap(async (req, res) => {
 });
 
 const getPostList = asyncWrap(async (req, res) => {
+
   const { token } = req.headers;
   const { stacks, page, limit } = req.query;
   const { userId } = req.param;
@@ -125,6 +126,7 @@ const getPostList = asyncWrap(async (req, res) => {
     res.status(err.status || 500).json(err.message);
   }
 });
+
 module.exports = {
   createPosting,
   updatePosting,
