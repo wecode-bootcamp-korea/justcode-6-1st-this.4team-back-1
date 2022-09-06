@@ -27,14 +27,13 @@ INSERT INTO stacks (name, image, classification) VALUES
 ('ReactNative', 'https://holaworld.io/images/languages/reactnative.svg', 'mobile'),
 ('Unity', 'https://holaworld.io/images/languages/unity.svg', 'mobile'), -- 모바일 
 
-('AWS', 'https://holaworld.io/images/languages/aws.svg', 'ect'),
-('Kubernetes', 'https://holaworld.io/images/languages/kubernetes.svg', 'ect'),
-('Docker', 'https://holaworld.io/images/languages/docker.svg', 'ect'),
-('Git', 'https://holaworld.io/images/languages/git.svg', 'ect'),
-('Figma', 'https://holaworld.io/images/languages/figma.svg', 'ect'),
-('Zeplin', 'https://holaworld.io/images/languages/zeplin.svg', 'ect'),
-('Jest', 'https://holaworld.io/images/languages/jest.svg', 'ect'); -- 기타
+('AWS', 'https://holaworld.io/images/languages/aws.svg', 'etc'),
+('Kubernetes', 'https://holaworld.io/images/languages/kubernetes.svg', 'etc'),
+('Docker', 'https://holaworld.io/images/languages/docker.svg', 'etc'),
+('Git', 'https://holaworld.io/images/languages/git.svg', 'etc'),
+('Figma', 'https://holaworld.io/images/languages/figma.svg', 'etc'),
+('Zeplin', 'https://holaworld.io/images/languages/zeplin.svg', 'etc'),
+('Jest', 'https://holaworld.io/images/languages/jest.svg', 'etc'); -- 기타
 
 -- migrate:down
 DELETE FROM stacks;
-
