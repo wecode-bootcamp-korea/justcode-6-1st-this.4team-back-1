@@ -71,8 +71,8 @@ const getPostList = async (token, stacks, page, limit) => {
   }
 
   return await postingDao.getPostList(user_id, stacks, limit_start, limit);
-};
-
+}
+}
 
 module.exports = {
   createPosting,
@@ -81,4 +81,4 @@ module.exports = {
   closedPosting,
   getOnePost,
   getPostList,
-};
+}
