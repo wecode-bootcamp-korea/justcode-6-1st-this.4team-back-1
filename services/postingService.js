@@ -61,7 +61,7 @@ const getPostList = async (token, stacks, page, limit) => {
 
   let limit_start = 0;
   if (page != 1) {
-    limit_start = page * limit - (limit - 1);
+    limit_start = (page * limit) - limit;
   }
 
   return await postingDao.getPostList(user_id, stacks, limit_start, limit);
