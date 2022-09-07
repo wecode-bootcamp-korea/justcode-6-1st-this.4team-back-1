@@ -39,8 +39,8 @@ const getUserById = async (id) => {
       )
     ) AS stack
     FROM users USER
-    JOIN user_stack us ON us.user_id = USER.id
-    JOIN stacks ON stacks.id = us.stack_id
+    LEFT JOIN user_stack us ON us.user_id = USER.id
+    LEFT JOIN stacks ON stacks.id = us.stack_id
     WHERE USER.id = ?`,
     [id]
   );
