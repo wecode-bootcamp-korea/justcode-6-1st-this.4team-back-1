@@ -1,6 +1,6 @@
 const userService = require('../services/userService');
 const asyncWrap = require('./async-wrap');
-const {userVo} = require('../vo/userVo');
+const { userVo } = require('../vo/userVo');
 
 // 사용자 회원가입
 const createUser = asyncWrap(async (req, res) => {
@@ -24,12 +24,13 @@ const createUser = asyncWrap(async (req, res) => {
 // 사용자 정보 가져오기
 const getUser = asyncWrap(async (req, res) => {
   const { token } = req.headers;
-
+  console.log('token', token);
   try {
     const user = await userService.getUser(token);
-
+    console.log('constroller', user);
     return res.status(200).json({ user });
-  } catch (error) {
+  } catch (err) {
+    console.log(err);
     res.status(err.status || 500).json(err.message);
   }
 });
@@ -54,7 +55,7 @@ const userLogin = asyncWrap(async (req, res) => {
   } catch (err) {
     res.status(err.status || 500).json(err.message);
   }
-})
+});
 
 // 사용자 정보 수정
 const updateUser = asyncWrap(async (req, res) => {

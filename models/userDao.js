@@ -4,18 +4,19 @@ const { myDataSource } = require('./typeorm-client');
 const createUser = async (params, password) => {
   await myDataSource.query(
     `INSERT INTO users(email, nickname, password) VALUES (?,?,?)`,
-    [params.get("email"), params.get("nickname"), password]
+    [params.get('email'), params.get('nickname'), password]
   );
 };
 
 // 이메일 중복체크
-const emailCheck = async (email) => {
-  return await myDataSource.query(`SELECT email FROM users WHERE email = ?`, 
-  [email]);
+const emailCheck = async email => {
+  return await myDataSource.query(`SELECT email FROM users WHERE email = ?`, [
+    email,
+  ]);
 };
 
 // 이메일로 사용자 정보 가지고 오기
-const getUserByEmail = async (email) => {
+const getUserByEmail = async email => {
   const [user] = await myDataSource.query(
     `SELECT * FROM users WHERE email = ?`,
     [email]
@@ -25,7 +26,7 @@ const getUserByEmail = async (email) => {
 };
 
 // 사용자 아이디로 정보 가지고 오기
-const getUserById = async (id) => {
+const getUserById = async id => {
   return await myDataSource.query(
     `SELECT 
     USER.id AS user_id, 
@@ -52,27 +53,28 @@ const updateUser = async (params, user_id) => {
   let where = `WHERE id = ?`;
 
   let param = [];
-  
-  let nickname = params.get("nickname");
-  let profile_image = params.get("profile_image");
 
-  if( nickname&& !profile_image) {
+  let nickname = params.get('nickname');
+  let profile_image = params.get('profile_image');
+
+  if (nickname && !profile_image) {
     condition = `nickname = ?`;
     param.push(nickname);
   }
 
-  if(profile_image && !nickname) {
+  if (profile_image && !nickname) {
     condition = `profile_image = ?`;
     param.push(profile_image);
   }
 
-  if(nickname && profile_image) {
+  if (nickname && profile_image) {
     condition = `nickname = ?, profile_image = ?`;
     param.push(nickname);
     param.push(profile_image);
   }
 
   query = query + condition + where;
+
   param.push(user_id);
   await myDataSource.query(
     query, param
