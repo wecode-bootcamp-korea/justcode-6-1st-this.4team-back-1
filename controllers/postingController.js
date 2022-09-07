@@ -113,10 +113,8 @@ const getOnePost = asyncWrap(async (req, res) => {
 });
 
 const getPostList = asyncWrap(async (req, res) => {
-
   const { token } = req.headers;
   const { stacks, page, limit } = req.query;
-  const { userId } = req.param;
 
   try {
     const posts = await postingService.getPostList(token, stacks, page, limit);

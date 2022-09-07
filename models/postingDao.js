@@ -148,6 +148,7 @@ const getOnePost = async post_id => {
     DATE_FORMAT(post.start_date, '%Y.%m.%d') AS start_date,
     post.contact_content, 
     post.progress_period,
+    post.contents,
     JSON_ARRAYAGG(
       JSON_OBJECT(
         'stack_name', stack.name,
