@@ -48,9 +48,9 @@ const getUserById = async id => {
 };
 
 const updateUser = async (params, user_id) => {
-  let query = `UPDATE UPDATE users SET `;
+  let query = `UPDATE users SET `;
   let condition = ``;
-  let where = ``;
+  let where = `WHERE id = ?`;
 
   let param = [];
 
@@ -74,7 +74,11 @@ const updateUser = async (params, user_id) => {
   }
 
   query = query + condition + where;
-  await myDataSource.query(query, param);
+
+  param.push(user_id);
+  await myDataSource.query(
+    query, param
+  );
 };
 
 module.exports = {
