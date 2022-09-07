@@ -35,11 +35,35 @@ const getUserById = async (id) => {
   );
 };
 
-// 사용자 정보 수정
 const updateUser = async (params, user_id) => {
+  let query = `UPDATE UPDATE users SET `;
+  let condition = ``;
+  let where = ``;
+
+  let param = [];
+  
+  let nickname = params.get("nickname");
+  let profile_image = params.get("profile_image");
+
+  if( nickname&& !profile_image) {
+    condition = `nickname = ?`;
+    param.push(nickname);
+  }
+
+  if(profile_image && !nickname) {
+    condition = `profile_image = ?`;
+    param.push(profile_image);
+  }
+
+  if(nickname && profile_image) {
+    condition = `nickname = ?, profile_image = ?`;
+    param.push(nickname);
+    param.push(profile_image);
+  }
+
+  query = query + condition + where;
   await myDataSource.query(
-    `UPDATE users SET nickname = ?, profile_image = ? WHERE id = ?`,
-    [params.get("nickname"), params.get("profile_image"), user_id]
+    query, param
   );
 };
 

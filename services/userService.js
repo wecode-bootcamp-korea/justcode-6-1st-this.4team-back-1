@@ -60,10 +60,12 @@ const updateUser = async (params, token) => {
     await userStackDao.deleteUserStack(user_id);
   }
 
-  let arr = params.get("stacks").split(',');
+  if(params.get("stacks")) {
+    let arr = params.get("stacks").split(',');
 
-  for (let i = 0; i < arr.length; i++) {
-    await userStackDao.insertUserStack(user_id, arr[i]);
+    for (let i = 0; i < arr.length; i++) {
+      await userStackDao.insertUserStack(user_id, arr[i]);
+    }
   }
 };
 
