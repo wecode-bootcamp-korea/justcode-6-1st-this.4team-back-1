@@ -61,7 +61,7 @@ const updateUser = async (req, res) => {
   try {
     await userService.updateUser(nickname, stacks, profile_image, token);
 
-    return res.status(201).json({ message: 'success' });
+    return res.status(200).json({ message: 'success' });
   } catch (err) {
     res.status(err.status || 500).json(err.message);
   }

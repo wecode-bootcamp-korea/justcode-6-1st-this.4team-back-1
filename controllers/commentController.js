@@ -7,8 +7,12 @@ const createComment = asyncWrap(async (req, res) => {
   const { comment } = req.body;
 
   try {
-    await commentService.createComment(token, posting_id, comment);
-    res.status(201).json({ message: 'Comment Created' });
+    const commentData = await commentService.createComment(
+      token,
+      posting_id,
+      comment
+    );
+    res.status(201).json({ commentData });
   } catch (err) {
     console.log(err);
     res
@@ -37,8 +41,12 @@ const updateComment = asyncWrap(async (req, res) => {
   const { comment } = req.body;
 
   try {
-    await commentService.updateComment(token, comment_id, comment);
-    res.status(200).json({ message: 'Comment Updated' });
+    const commentData = await commentService.updateComment(
+      token,
+      comment_id,
+      comment
+    );
+    res.status(200).json({ commentData, message: 'comment Updated' });
   } catch (err) {
     console.log(err);
     res
@@ -50,6 +58,7 @@ const updateComment = asyncWrap(async (req, res) => {
 const deleteComment = asyncWrap(async (req, res) => {
   const token = req.headers.token;
   const { comment_id } = req.params;
+  console.log(comment_id);
 
   try {
     await commentService.deleteComment(token, comment_id);

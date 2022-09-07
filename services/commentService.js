@@ -7,7 +7,12 @@ const createComment = async (token, posting_id, comment) => {
   commonService.checkAllParams(params);
   const user_id = jwt.verify(token, 'secretKey').user_id;
 
-  await commentDao.createComment(user_id, posting_id, comment);
+  const commentData = await commentDao.createComment(
+    user_id,
+    posting_id,
+    comment
+  );
+  return commentData;
 };
 
 const readComment = async posting_id => {
@@ -18,11 +23,17 @@ const readComment = async posting_id => {
 const updateComment = async (token, comment_id, comment) => {
   const user_id = jwt.verify(token, 'secretKey').user_id;
 
-  await commentDao.updateComment(user_id, comment_id, comment);
+  const commentData = await commentDao.updateComment(
+    user_id,
+    comment_id,
+    comment
+  );
+  return commentData;
 };
 
 const deleteComment = async (token, comment_id) => {
   const user_id = jwt.verify(token, 'secretKey').user_id;
+  console.log(user_id, comment_id);
 
   await commentDao.deleteComment(user_id, comment_id);
 };
