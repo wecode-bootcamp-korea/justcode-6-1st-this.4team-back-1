@@ -4,14 +4,14 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 // 사용자 회원가입
-const createUser = async (email, nickname, password) => {
-  const result = await userDao.emailCheck(email);
+const createUser = async (params) => {
+  const result = await userDao.emailCheck(params.get("email"));
 
   let check = '';
 
   if (result.length == 0) {
-    const hashedPw = await bcrypt.hash(password, 10);
-    await userDao.createUser(email, nickname, hashedPw);
+    const hashedPw = await bcrypt.hash(params.get("password"), 10);
+    await userDao.createUser(params, hashedPw);
 
     check = 'success';
   } else {
@@ -29,13 +29,13 @@ const getUser = async token => {
 };
 
 // 사용자 로그인
-const userLogin = async (email, password) => {
-  const user = await userDao.getUserByEmail(email);
+const userLogin = async (params) => {
+  const user = await userDao.getUserByEmail(params.get("email"));
 
   const result = { state: 'fail', token: '' };
   console.log(user);
   if (user) {
-    const ok = await bcrypt.compare(password, user.password);
+    const ok = await bcrypt.compare(params.get("password"), user.password);
 
     if (ok) {
       const token = jwt.sign({ user_id: user.id }, 'secretKey');
@@ -49,10 +49,10 @@ const userLogin = async (email, password) => {
 };
 
 // 사용자 정보 수정
-const updateUser = async (nickname, stacks, profile_image, token) => {
+const updateUser = async (params, token) => {
   const user_id = jwt.verify(token, 'secretKey').user_id;
 
-  await userDao.updateUser(nickname, stacks, profile_image, user_id);
+  await userDao.updateUser(params, user_id);
 
   const result = userStackDao.seleteUserStack(user_id);
 
@@ -60,10 +60,12 @@ const updateUser = async (nickname, stacks, profile_image, token) => {
     await userStackDao.deleteUserStack(user_id);
   }
 
-  let arr = stacks.split(',');
+  if(params.get("stacks")) {
+    let arr = params.get("stacks").split(',');
 
-  for (let i = 0; i < arr.length; i++) {
-    await userStackDao.insertUserStack(user_id, arr[i]);
+    for (let i = 0; i < arr.length; i++) {
+      await userStackDao.insertUserStack(user_id, arr[i]);
+    }
   }
 };
 

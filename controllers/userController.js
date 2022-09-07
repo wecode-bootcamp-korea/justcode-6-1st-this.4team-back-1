@@ -1,11 +1,13 @@
 const userService = require('../services/userService');
+const asyncWrap = require('./async-wrap');
+const {userVo} = require('../vo/userVo');
 
 // 사용자 회원가입
-const createUser = async (req, res) => {
-  const { email, nickname, password } = req.body;
+const createUser = asyncWrap(async (req, res) => {
+  const params = userVo(req.body);
 
   try {
-    const result = await userService.createUser(email, nickname, password);
+    const result = await userService.createUser(params);
 
     switch (result) {
       case 'success':
@@ -17,10 +19,10 @@ const createUser = async (req, res) => {
   } catch (err) {
     res.status(err.status || 500).json(err.message);
   }
-};
+});
 
 // 사용자 정보 가져오기
-const getUser = async (req, res) => {
+const getUser = asyncWrap(async (req, res) => {
   const { token } = req.headers;
 
   try {
@@ -30,13 +32,14 @@ const getUser = async (req, res) => {
   } catch (error) {
     res.status(err.status || 500).json(err.message);
   }
-};
+});
 
 // 사용자 로그인
-const userLogin = async (req, res) => {
-  const { email, password } = req.body;
+const userLogin = asyncWrap(async (req, res) => {
+  const params = userVo(req.body);
+
   try {
-    const result = await userService.userLogin(email, password);
+    const result = await userService.userLogin(params);
 
     switch (result.state) {
       case 'fail':
@@ -51,20 +54,20 @@ const userLogin = async (req, res) => {
   } catch (err) {
     res.status(err.status || 500).json(err.message);
   }
-};
+})
 
 // 사용자 정보 수정
-const updateUser = async (req, res) => {
+const updateUser = asyncWrap(async (req, res) => {
   const { token } = req.headers;
-  const { nickname, stacks, profile_image } = req.body;
+  const params = userVo(req.body);
 
   try {
-    await userService.updateUser(nickname, stacks, profile_image, token);
+    await userService.updateUser(params, token);
 
     return res.status(200).json({ message: 'success' });
   } catch (err) {
     res.status(err.status || 500).json(err.message);
   }
-};
+});
 
 module.exports = { createUser, getUser, userLogin, updateUser };
