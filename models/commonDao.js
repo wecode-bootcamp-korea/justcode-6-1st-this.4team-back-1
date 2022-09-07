@@ -6,7 +6,7 @@ const { myDataSource } = require('./typeorm-client');
  * 요청한 사람과 작성자가 같은지 확인: table, id, user_id 입력
  *
  * @param {string} table 테이블 이름
- * @param {string} id 테이블 PK값
+ * @param {int} id 테이블 PK값
  * @param {int} user_id 작성자 PK값
  *
  */
@@ -15,7 +15,7 @@ const isCorrectId = async (table, id, user_id) => {
   let query = `SELECT EXISTS (SELECT * FROM ` + table;
 
   // 해당 table id에 해당하는 값이 있는지
-  if (!user_id) {
+  if (user_id === undefined) {
     query += ` WHERE id = ?) AS SUCCESS`;
     params.push(id);
 
@@ -31,6 +31,7 @@ const isCorrectId = async (table, id, user_id) => {
   else {
     query += ` WHERE user_id = ? AND id =?) AS SUCCESS;`;
     params.push(user_id, id);
+    console.log(params);
 
     const isCorrectId = await myDataSource.query(query, params);
 
