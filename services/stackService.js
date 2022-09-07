@@ -20,10 +20,7 @@ const getStackList = async category => {
       classification = 'etc';
       break;
   }
-
-  console.log;
-
-
+  
   return await stackDao.getStackList(classification);
 };
 
