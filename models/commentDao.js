@@ -31,6 +31,7 @@ const createComment = async (user_id, posting_id, comment) => {
 
 const readComment = async posting_id => {
   const table = 'postings';
+  console.log(posting_id);
   await commonDao.isCorrectId(table, posting_id);
 
   const comments = await myDataSource.query(
