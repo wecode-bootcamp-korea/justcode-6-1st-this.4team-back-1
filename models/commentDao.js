@@ -31,7 +31,6 @@ const createComment = async (user_id, posting_id, comment) => {
 
 const readComment = async posting_id => {
   const table = 'postings';
-  console.log(posting_id);
   await commonDao.isCorrectId(table, posting_id);
 
   const comments = await myDataSource.query(
@@ -84,9 +83,19 @@ const updateComment = async (user_id, comment_id, comment) => {
 
 const deleteComment = async (user_id, comment_id) => {
   let table = 'comments';
+  // comments 테이블에 해당 comment_id 값이 있는지 확인
   await commonDao.isCorrectId(table, comment_id);
+  // 해당 comment_id 작성자와 로그인 한 유저가 같은지 확인
   await commonDao.isCorrectId(table, comment_id, user_id);
+  // comments 테이블에 comment_id 값 삭제
+  const posting_id = await myDataSource.query(
+    `
+    SELECT posting_id FROM comments WHERE id = ?;
+    `,
+    [comment_id]
+  );
   await commonDao.commonDelete(table, comment_id);
+  return await readComment(posting_id[0].posting_id);
 };
 
 module.exports = { createComment, readComment, updateComment, deleteComment };

@@ -24,14 +24,12 @@ const createUser = async params => {
 // 사용자 정보 가져오기
 const getUser = async token => {
   const user_id = jwt.verify(token, 'secretKey').user_id;
-  console.log('services', user_id);
   return await userDao.getUserById(user_id);
 };
 
 // 사용자 로그인
 const userLogin = async params => {
   const user = await userDao.getUserByEmail(params.get('email'));
-  console.log('test2');
   const result = { state: 'fail', token: '' };
   console.log(user);
   if (user) {

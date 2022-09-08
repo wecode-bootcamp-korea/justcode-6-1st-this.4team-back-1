@@ -24,10 +24,8 @@ const createUser = asyncWrap(async (req, res) => {
 // 사용자 정보 가져오기
 const getUser = asyncWrap(async (req, res) => {
   const { token } = req.headers;
-  console.log('token', token);
   try {
     const user = await userService.getUser(token);
-    console.log('constroller', user);
     return res.status(200).json({ user });
   } catch (err) {
     console.log(err);
@@ -47,7 +45,6 @@ const userLogin = asyncWrap(async (req, res) => {
         return res.status(401).json({ message: 'login fail' });
 
       case 'success':
-        console.log(result);
         return res
           .status(200)
           .json({ message: 'login success', token: result.token });
