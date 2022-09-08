@@ -58,11 +58,10 @@ const updateComment = asyncWrap(async (req, res) => {
 const deleteComment = asyncWrap(async (req, res) => {
   const token = req.headers.token;
   const { comment_id } = req.params;
-  console.log(comment_id);
 
   try {
-    await commentService.deleteComment(token, comment_id);
-    res.status(204).json({ message: 'Comment Deleted' });
+    const data = await commentService.deleteComment(token, comment_id);
+    res.status(201).json(data);
   } catch (err) {
     console.log(err);
     res

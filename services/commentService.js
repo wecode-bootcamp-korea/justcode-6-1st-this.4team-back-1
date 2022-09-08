@@ -4,7 +4,6 @@ const jwt = require('jsonwebtoken');
 
 const createComment = async (token, posting_id, comment) => {
   const params = { token, posting_id, comment };
-  commonService.checkAllParams(params);
   const user_id = jwt.verify(token, 'secretKey').user_id;
 
   const commentData = await commentDao.createComment(
@@ -33,9 +32,8 @@ const updateComment = async (token, comment_id, comment) => {
 
 const deleteComment = async (token, comment_id) => {
   const user_id = jwt.verify(token, 'secretKey').user_id;
-  console.log(user_id, comment_id);
 
-  await commentDao.deleteComment(user_id, comment_id);
+  return await commentDao.deleteComment(user_id, comment_id);
 };
 
 module.exports = { createComment, readComment, updateComment, deleteComment };

@@ -31,10 +31,8 @@ const isCorrectId = async (table, id, user_id) => {
   else {
     query += ` WHERE user_id = ? AND id =?) AS SUCCESS;`;
     params.push(user_id, id);
-    console.log(params);
 
     const isCorrectId = await myDataSource.query(query, params);
-
     if (isCorrectId[0].SUCCESS === '0') {
       const err = new Error('Not Correct User');
       err.status = 404;

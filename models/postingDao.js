@@ -206,9 +206,9 @@ const getPostList = async (user_id, stacks, page, limit) => {
   if (user_id) {
     where = `WHERE user_id = ?`;
     param.push(user_id);
-  } 
+  }
 
-  if(stacks) {
+  if (stacks) {
     let arr = stacks.split(',');
 
     where = `WHERE stack.id IN (?)`;
@@ -218,9 +218,7 @@ const getPostList = async (user_id, stacks, page, limit) => {
   query = query + where + ` GROUP BY post.id ORDER By post.id limit ?, ?`;
   param.push(page);
   param.push(Number(limit));
-
   return await myDataSource.query(query, param);
-
 };
 
 module.exports = {
