@@ -13,9 +13,7 @@
 
 ### [2. 기능 소개](#✨기능-소개)
 
-### [3. 담당기능 구현시 고려한 점](#✨담당-기능-구현-시-고려한-점)
-
-### [4. 링크](#✨링크)
+### [3. 링크](#✨링크)
 
 <br>
 
@@ -41,7 +39,7 @@ e-commerce 사이트의 경우 조회에 관련된 기능들이 메인으로 조
 ![](https://user-images.githubusercontent.com/110225060/197342659-41c8fe87-7d62-4e41-a043-8bddd7b9c064.png)
 
 ## **📌적용 기술**
-<img src="https://img.shields.io/badge/TypeScript-F7DF1E?style=for-the-badge&logo=TypeScript&logoColor=white"/>&nbsp;
+<img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=JavaScript&logoColor=white"/>&nbsp;
 <img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=React&logoColor=white"/>&nbsp;
 <img src="https://img.shields.io/badge/Sass-CC6699?style=for-the-badge&logo=Sass&logoColor=white"/>&nbsp;
 <img src="https://img.shields.io/badge/Slick-FF880F?style=for-the-badge&logo=SlickPic&logoColor=white"/>&nbsp;
@@ -115,32 +113,6 @@ npm start
 |댓글 작성|- 댓글을 작성하는 API <br> - 토큰으로 어떤 사용자가 작성하였는지 확인 후 댓글 삽입|
 |댓글 수정|- 댓글을 수정하는 API <br> - 토큰으로 댓글 작성자와 수정을 요청한 사용자가 일치하는지 확인 후 수정 진행|
 |댓글 삭제|- 댓글을 삭제하는 API <br> - 토큰으로 댓글 작성자와 삭제를 요청한 사용자가 일치하는지 확인 후 수정 진행|
-
-<br>
-
-# *✨담당 기능 구현 시 고려한 점*
-## **📌게시글 페이징**
-![image](https://user-images.githubusercontent.com/110225060/197344478-80fbeb9d-c88f-4595-8ec1-00576cc282a0.png)
-
-일반적인 게시글 페이지네이션은 불러오는 목록에 대한 COUNT 쿼리를 한번 실행한 후, 이 값을 기준으로 몇 페이지씩 나누겠다고 구현을하지만, 프론트에서 게시글을 가지고 올 때 쿼리를 거치지 않고 필터링을 하는 부분이 있으므로 누락되는 게시글이 생길 우려가 있어 프론트에서 넘겨주는 페이지 번호 만으로 페이지네이션이 되도록 구현을 하였다.
-
-## **📌사용자 정보를 받아오는 것**
-![image](https://user-images.githubusercontent.com/110225060/197344745-0cd795b3-996b-46ea-b623-23307b7c8af0.png)
-
-회원가입, 회원 정보 수정 등을 진행 할 때마다 request body에서 받아오는 값을 일일히 적어줘야하는 번거로움이 있어, 한 번에 값을 받아 올 수 있도록 처리하였다.
-
-🔻 기존의 코드
-```
-const { email, nickname, password, stacks, profile_image} = req.body 
-```
-
-🔻 수정된 코드
-```
-const params = userVo(req.body);
-```
-
-하지만 이 부분은 나중에 찾아보니 DTO 개념을 활용하여 유효성 검사를 하고 view와 controller 사이에서 데이터를 주고받는 것을 알게되었다.
-추후 리팩토링을 하여 이 부분을 보완할 예정이다.
 
 <br>
 
