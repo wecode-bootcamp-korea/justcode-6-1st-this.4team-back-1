@@ -12,17 +12,11 @@
 ### **개발 기간**
 2022.08.29 ~ 2022.09.08
 
-<br>
-
 ### **팀원**
 프론트엔드 4명, 백엔드 2명
 
-<br>
-
 ### **개요**
 Hola Word는 겉보기에는 간단한 사이트처럼 보이지만, 게시글과 댓글의 작성, 읽기, 수정, 삭제 등 웹 개발의 기본적인 기능을 경험해 볼 수 있는 사이트입니다. 이 프로젝트는 부트 캠프에서 처음 시작하는 프로젝트인 만큼 현업에서 사용되는 기술과 기능을 최대한 반영하여 웹 개발의 기본적인 기능을 경험해 볼 수 있도록 구현하였습니다.
-
-<br>
 
 ### **사용 스택**
 <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=JavaScript&logoColor=white"/>&nbsp;
@@ -68,16 +62,31 @@ Hola Word는 겉보기에는 간단한 사이트처럼 보이지만, 게시글�
 ```
 git clone https://github.com/hhhj1008/justcode-6-1st-this.4team-back.git
 ```
+
 ### 2. 프로젝트 폴더 선택 후 아래의 명령어 실행
 ```
 npm i
 ```
+
 ### 3. 데이터베이스 스키마 설정
 dbmate 설치 관련은 [참조](https://github.com/amacneil/dbmate)
 ```
 dbmate up
 ```
-### 4. 프로젝트 실행
+
+### 4. .env 환경변수 설정
+```
+DATABASE_URL={dbmate 연동 URL} 
+ex) mysql://{user}:{password}@{host}:{port}/{dbname}
+TYPEORM_CONNECTION = 사용할 데이터베이스 종류
+TYPEORM_HOST = host              
+TYPEORM_PORT = port                   
+TYPEORM_USERNAME = user               
+TYPEORM_PASSWORD = password         
+TYPEORM_DATABASE = dbname
+```
+
+### 5. 프로젝트 실행
 ```
 npm start
 ```
